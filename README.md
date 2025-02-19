@@ -10,8 +10,6 @@ This repository demonstrates how to create a React Native bridge for both Androi
 - **iOS Bridge (Swift/Objective-C)** – Creating the iOS bridge using Swift/Objective-C.  
 - **Exposing Methods to JavaScript** – How to call native functions from React Native.  
 - **Handling Callbacks & Promises** – Managing asynchronous communication between native and JavaScript.  
-- **Event Emitters** – Sending events from the native side to React Native.  
-- **Testing & Debugging** – Strategies to test and troubleshoot native modules.  
 
 ## Full Guide  
 For a detailed step-by-step guide, refer to the full article:  
