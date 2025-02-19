@@ -1,118 +1,138 @@
-/**
- * Sample React Native App
- * https://github.com/facebook/react-native
- *
- * @format
- */
-
-import React from 'react';
-import type {PropsWithChildren} from 'react';
+import React, {useState} from 'react';
 import {
-  SafeAreaView,
-  ScrollView,
-  StatusBar,
+  TouchableOpacity,
+  NativeModules,
   StyleSheet,
   Text,
-  useColorScheme,
   View,
 } from 'react-native';
 
-import {
-  Colors,
-  DebugInstructions,
-  Header,
-  LearnMoreLinks,
-  ReloadInstructions,
-} from 'react-native/Libraries/NewAppScreen';
-
-type SectionProps = PropsWithChildren<{
-  title: string;
-}>;
-
-function Section({children, title}: SectionProps): React.JSX.Element {
-  const isDarkMode = useColorScheme() === 'dark';
-  return (
-    <View style={styles.sectionContainer}>
-      <Text
-        style={[
-          styles.sectionTitle,
-          {
-            color: isDarkMode ? Colors.white : Colors.black,
-          },
-        ]}>
-        {title}
-      </Text>
-      <Text
-        style={[
-          styles.sectionDescription,
-          {
-            color: isDarkMode ? Colors.light : Colors.dark,
-          },
-        ]}>
-        {children}
-      </Text>
-    </View>
-  );
+interface NativeModule {
+  add: (a: number, b: number) => Promise<number>;
+  subtract: (a: number, b: number) => Promise<number>;
 }
 
-function App(): React.JSX.Element {
-  const isDarkMode = useColorScheme() === 'dark';
+const {NativeModule} = NativeModules as {NativeModule: NativeModule};
 
-  const backgroundStyle = {
-    backgroundColor: isDarkMode ? Colors.darker : Colors.lighter,
+const App: React.FC = () => {
+  const [add, setAdd] = useState<string | number>('');
+  const [sub, setSub] = useState<string | number>('');
+
+  const subtraction = async () => {
+    try {
+      const result = await NativeModule.subtract(10, 5);
+      setSub(result);
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  const addition = async () => {
+    try {
+      const result = await NativeModule.add(3, 4);
+      setAdd(result);
+    } catch (error) {
+      console.error(error);
+    }
   };
 
   return (
-    <SafeAreaView style={backgroundStyle}>
-      <StatusBar
-        barStyle={isDarkMode ? 'light-content' : 'dark-content'}
-        backgroundColor={backgroundStyle.backgroundColor}
-      />
-      <ScrollView
-        contentInsetAdjustmentBehavior="automatic"
-        style={backgroundStyle}>
-        <Header />
-        <View
-          style={{
-            backgroundColor: isDarkMode ? Colors.black : Colors.white,
-          }}>
-          <Section title="Step One">
-            Edit <Text style={styles.highlight}>App.tsx</Text> to change this
-            screen and then come back to see your edits.
-          </Section>
-          <Section title="See Your Changes">
-            <ReloadInstructions />
-          </Section>
-          <Section title="Debug">
-            <DebugInstructions />
-          </Section>
-          <Section title="Learn More">
-            Read the docs to discover what to do next:
-          </Section>
-          <LearnMoreLinks />
-        </View>
-      </ScrollView>
-    </SafeAreaView>
-  );
-}
+    <View style={styles.main}>
+      <Text style={styles.heading}>React Native Native Module</Text>
 
-const styles = StyleSheet.create({
-  sectionContainer: {
-    marginTop: 32,
-    paddingHorizontal: 24,
-  },
-  sectionTitle: {
-    fontSize: 24,
-    fontWeight: '600',
-  },
-  sectionDescription: {
-    marginTop: 8,
-    fontSize: 18,
-    fontWeight: '400',
-  },
-  highlight: {
-    fontWeight: '700',
-  },
-});
+      <View style={styles.buttonContainer}>
+        <TouchableOpacity style={styles.button} onPress={addition}>
+          <Text style={styles.buttonText}>Add</Text>
+        </TouchableOpacity>
+
+        <TouchableOpacity style={styles.button} onPress={subtraction}>
+          <Text style={styles.buttonText}>Subtract</Text>
+        </TouchableOpacity>
+      </View>
+
+      <TouchableOpacity
+        style={[styles.button, styles.resetButton]}
+        onPress={() => {
+          setAdd('');
+          setSub('');
+        }}>
+        <Text style={styles.buttonText}>Reset</Text>
+      </TouchableOpacity>
+
+      <View style={styles.resultContainer}>
+        <Text style={styles.resultText}>
+          Addition of 3 + 4 is <Text style={styles.result}>{add}</Text>
+        </Text>
+        <Text style={styles.resultText}>
+          Subtraction of 10 - 5 is <Text style={styles.result}>{sub}</Text>
+        </Text>
+      </View>
+    </View>
+  );
+};
 
 export default App;
+
+const styles = StyleSheet.create({
+  main: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: '#f5f5f5',
+    padding: 20,
+  },
+  heading: {
+    fontSize: 22,
+    fontWeight: 'bold',
+    marginBottom: 20,
+    color: '#333',
+  },
+  buttonContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    width: '80%',
+    marginBottom: 20,
+  },
+  button: {
+    backgroundColor: '#6200ea',
+    paddingVertical: 12,
+    paddingHorizontal: 20,
+    borderRadius: 8,
+    alignItems: 'center',
+    flex: 1,
+    marginHorizontal: 5,
+  },
+  buttonText: {
+    color: '#fff',
+    fontSize: 16,
+    fontWeight: '600',
+  },
+  resetButton: {
+    backgroundColor: '#ff4081',
+    width: '80%',
+    marginBottom: 20,
+    flex: 0,
+  },
+  resultContainer: {
+    width: '80%',
+    backgroundColor: '#fff',
+    padding: 20,
+    borderRadius: 10,
+    elevation: 3,
+    shadowColor: '#000',
+    shadowOpacity: 0.1,
+    shadowRadius: 5,
+    alignItems: 'center',
+  },
+  resultText: {
+    fontSize: 18,
+    fontWeight: '500',
+    color: '#333',
+    marginBottom: 5,
+  },
+  result: {
+    fontWeight: 'bold',
+    textDecorationLine: 'underline',
+    fontSize: 20,
+  },
+});
